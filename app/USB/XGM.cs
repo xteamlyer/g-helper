@@ -1,19 +1,33 @@
 ﻿// Reference : thanks to https://github.com/RomanYazvinsky/ for initial discovery of XGM payloads
 
 using HidSharp;
+using HidSharp.Reports;
 using System.Text;
 
 namespace GHelper.USB
 {
     public static class XGM
     {
+        const byte XGM_REPORT_ID = 0x5e;
         const int ASUS_ID = 0x0b05;
-        static readonly int[] deviceIds = { 0x1970, 0x1a9a, 0x1C29};
+        static readonly int[] deviceIds = { 0x1970, 0x1a9a, 0x1C29, 0x19B6};
 
         public static HidDevice? GetDevice()
         {
             try
             {
+                /*
+                var devices = DeviceList.Local.GetHidDevices(ASUS_ID).Where(device =>
+                    deviceIds.Contains(device.ProductID) &&
+                    device.CanOpen &&
+                    device.GetMaxFeatureReportLength() >= 300);
+
+                foreach (var device in devices)
+                {
+                    var report = device.GetReportDescriptor().TryGetReport(ReportType.Feature, XGM_REPORT_ID, out _);
+                    Logger.WriteLine($"Found XGM Device: PID={device.ProductID}, MaxFeatureReportLength={device.GetMaxFeatureReportLength()}, Report={report}");
+                }
+                */
                 return DeviceList.Local.GetHidDevices(ASUS_ID).FirstOrDefault(device =>
                     deviceIds.Contains(device.ProductID) &&
                     device.CanOpen &&
@@ -71,7 +85,7 @@ namespace GHelper.USB
 
         public static void Light(bool status)
         {
-            Write([0x5e, 0xc5, status ? (byte)0x50 : (byte)0]);
+            Write([XGM_REPORT_ID, 0xc5, status ? (byte)0x50 : (byte)0]);
         }
 
         public static void InitLight()
@@ -86,7 +100,7 @@ namespace GHelper.USB
         {
             Task.Run(() =>
             {
-                if (IsConnected()) Write([0x5e, 0xd1, 0x02]);
+                if (IsConnected()) Write([XGM_REPORT_ID, 0xd1, 0x02]);
             });
         }
 
@@ -98,7 +112,7 @@ namespace GHelper.USB
                 {
                     if (AsusACPI.IsInvalidCurve(curve)) return;
                     byte[] msg = new byte[19];
-                    Array.Copy(new byte[] { 0x5e, 0xd1, 0x01 }, msg, 3);
+                    Array.Copy(new byte[] { XGM_REPORT_ID, 0xd1, 0x01 }, msg, 3);
                     Array.Copy(curve, 0, msg, 3, curve.Length);
                     Write(msg);
                 }
