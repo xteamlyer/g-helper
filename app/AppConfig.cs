@@ -592,6 +592,11 @@ public static class AppConfig
         return Is("mode_reapply") || ContainsModel("FA401");
     }
 
+    public static bool IsStandardModeFix()
+    {
+        return Is("shutdown_gpu") || ContainsModel("FX506HCB");
+    }
+
     public static bool IsShutdownReset()
     {
         return Is("shutdown_reset") || ContainsModel("FX507Z");
