@@ -348,6 +348,7 @@ namespace GHelper.USB
                 (byte)AuraBacklightType.MultiZone => AuraBacklightType.MultiZone,
                 (byte)AuraBacklightType.PerKey => AuraBacklightType.PerKey,
                 (byte)AuraBacklightType.SingleZone => AuraBacklightType.SingleZone,
+                0x00 => AuraBacklightType.SingleZone,
                 _ => AuraBacklightType.Unknown
             };
 
